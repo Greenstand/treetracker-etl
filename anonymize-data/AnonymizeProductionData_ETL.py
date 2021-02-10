@@ -74,6 +74,12 @@ trimPlanters = plantersTable[['id','first_name','last_name','email','organizatio
 def fakeEmailGenerator(firstName, lastName, organization):
     domains = [ "hotmail.com", "gmail.com", "aol.com", "mail.com", "yahoo.com", "live.com"]
 
+    if len(firstName) == 0:
+        firstName = fake.first_name()
+
+    if len(lastName) == 0:
+        lastName = fake.last_name()
+
     prefix = firstName.lower()[0:1+randrange(len(firstName))]
     suffix = lastName.lower()[0:1+randrange(len(lastName))]
     domain = ""
