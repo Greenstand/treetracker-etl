@@ -67,7 +67,7 @@ print("anonymizing entities")
 uploadEntities = trimmedEntities.apply(lambda x: anonymizeEntities(x), axis=1)
 
 print("extracting trees")
-treesTable = pd.read_sql_query('SELECT * FROM trees WHERE EXTRACT(YEAR FROM time_updated) <> -1 AND active=true;', oConnection, parse_dates=['time_created', 'time_updated'])
+treesTable = pd.read_sql_query('SELECT * FROM trees WHERE EXTRACT(YEAR FROM time_updated) <> -1 AND EXTRACT(YEAR FROM time_updated) > 2020 AND EXTRACT(YEAR FROM time_updated) < 2022 AND active=true;', oConnection, parse_dates=['time_created', 'time_updated'])
 
 uploadTrees = treesTable[['time_created','time_updated','missing','priority','cause_of_death_id','planter_id','primary_location_id','settings_id','image_url','certificate_id','lat','lon', 'planter_photo_url','planter_identifier','device_id','note','verified','uuid','approved','status','species_id','planting_organization_id','contract_id','token_issued','morphology','age','species','capture_approval_tag','rejection_reason','device_identifier']]
 
@@ -150,6 +150,8 @@ uploadEntities.to_sql('entities', engine, if_exists='replace')
 
 print("Appending to trees")
 uploadTrees.to_sql('trees', engine, if_exists='append', index=False)
+
+pd.read_sql_query('UPDATE trees SET estimated_geometric_location = ST_SetSRID( ST_MakePoint(lon, lat), 4326)')
 
 print("Replacing planters")
 uploadPlanters.to_sql('planters', engine, if_exists='replace')
